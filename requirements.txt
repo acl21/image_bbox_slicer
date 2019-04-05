@@ -1,0 +1,4 @@
+Pillow==5.4.1
+pascal-voc-writer==0.1.4
+numpy==1.16.2
+matplotlib==3.0.3
