@@ -7,19 +7,7 @@ import glob
 import random
 from PIL import Image
 from pascal_voc_writer import Writer
-
 from .helpers import *
-
-"""
-Parameters
-----------
-
-Returns
-----------
-
-Raises
-----------
-"""
 
 
 class Slicer(object):

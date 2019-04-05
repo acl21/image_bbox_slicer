@@ -3,7 +3,7 @@
 This easy-to-use library splits images and its bounding box annotations into tiles. This can split images and annotations both by specific sizes and into any arbitrary number of tiles (equal parts).
 
 <div align="center">
-<img src="imgs/ibs_demo.jpg" alt="Partial Labels Example" style="width: 600px;" />
+<img src="imgs/ibs_demo.jpg" alt="Partial Labels Example" style="width: 500px;" />
 </div>
 
 ## Installation
@@ -29,15 +29,7 @@ import image_bbox_slicer as ibs
 ### Configure `Slicer` Object
 
 #### Setting Paths To Source And Destination Directories
-You can configure paths to source and destination directories like the following. 
-
-By default it takes the current working directory as the source folder for both images and annotations and also creates new folders:
-* `/sliced_images` and 
-* `/sliced_annotation` 
-
-
-in the current working directory.
-
+You must configure paths to source and destination directories like the following. 
 
 ```python
 im_src = './src/images'
@@ -93,16 +85,10 @@ slicer.slice_by_number(number_tiles=4)
 slicer.visualize_random()
 ```
 
-    Obtained 4 image slices!
-    Successfully saved the mapping between files before and after slicing at ./dst/images
-    Obtained 4 annotation slices!
-    Successfully saved the mapping between files before and after slicing at ./dst/annotations
-
-
 <div align="center">
-<img src="imgs/output_10_1.png" alt="Output1" style="width: 400px;" />
+<img src="imgs/output_10_1.png" alt="Output1" style="width: 200px;" />
 
-<img src="imgs/output_10_2.png" alt="Output2" style="width: 400px;" />
+<img src="imgs/output_10_2.png" alt="Output2" style="width: 200px;" />
 </div>
 
 
@@ -114,17 +100,11 @@ slicer.slice_by_size(tile_size=(418,279), tile_overlap=0)
 slicer.visualize_random()
 ```
 
-    Obtained 90 image slices!
-    Successfully saved the mapping between files before and after slicing at ./dst/images
-    Obtained 90 annotation slices!
-    Successfully saved the mapping between files before and after slicing at ./dst/annotations
-
-
 
 <div align="center">
-<img src="imgs/output_12_1.png" alt="Output3" style="width: 400px;" />
+<img src="imgs/output_12_1.png" alt="Output3" style="width: 200px;" />
 
-<img src="imgs/output_12_2.png" alt="Output4" style="width: 400px;" />
+<img src="imgs/output_12_2.png" alt="Output4" style="width: 200px;" />
 </div>
 
 _Note:_
