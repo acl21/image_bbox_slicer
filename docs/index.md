@@ -6,7 +6,7 @@ This easy-to-use library splits images and its bounding box annotations into til
 <img src="img/ibs_demo.jpg" alt="Overview" style="width: 500px;" />
 </div>
 <br>
-Currently, this library only supports bounding box annotations in [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) format. And as of now, there is **no command line support**.
+Currently, this library only supports bounding box annotations in [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) format. And as of now, there is **no command line execution support**.
 
 ## Installation
 ```python

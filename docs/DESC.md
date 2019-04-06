@@ -3,9 +3,6 @@
 
 This easy-to-use library splits images and its bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts. Read the docs [here](https://image-bbox-slicer.readthedocs.io/en/latest/).
 
-<div align="center">
-<img src="imgs/ibs_demo.jpg" alt="Partial Labels Example" style="width: 500px;" />
-</div>
 Currently, this library only supports bounding box annotations in [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) format. And as of now, there is **no command line execution support**. 
 
 ## Installation
@@ -21,8 +18,7 @@ pascal-voc-writer==0.1.4
 matplotlib==3.0.3
 ```
 
-## Usage - A Quick Demo
-_Note: This usage demo can be found in `demo.ipynb` in the repo._
+## A Quick Demo
 
 ```python
 import image_bbox_slicer as ibs
@@ -84,33 +80,17 @@ slicer.save_before_after_map = True
 
 ```python
 slicer.slice_by_number(number_tiles=4)
-slicer.visualize_random()
 ```
-
-<div align="center">
-<img src="imgs/output_10_1.png" alt="Output1" style="width: 200px;" />
-
-<img src="imgs/output_10_2.png" alt="Output2" style="width: 200px;" />
-</div>
-
 
 #### By Specific Size
 
 ```python
 slicer.slice_by_size(tile_size=(418,279), tile_overlap=0)
-slicer.visualize_random()
 ```
 
-
-<div align="center">
-<img src="imgs/output_12_1.png" alt="Output3" style="width: 200px;" />
-
-<img src="imgs/output_12_2.png" alt="Output4" style="width: 200px;" />
-</div>
-
-*Note: `visualize_random()` randomly picks a recently sliced image from the directory for plotting.*
-
 ### Other Slicing Functions
+
+#### Slicing Only Images
 
 #### By Number Of Tiles
 ```python
