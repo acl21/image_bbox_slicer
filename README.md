@@ -26,9 +26,9 @@ _Note: This usage demo can be found in `demo.ipynb` in the repo._
 import image_bbox_slicer as ibs
 ```
 
-## Create And Configure `Slicer` Object
+### Create And Configure `Slicer` Object
 
-### Setting Paths To Source And Destination Directories.
+#### Setting Paths To Source And Destination Directories.
 You must configure paths to source and destination directories like the following. 
 
 ```python
@@ -110,17 +110,17 @@ slicer.visualize_random()
 
 ### Other Slicing Functions
 
-#### Only Images
+#### Slicing Only Images
 
-* #### By Number Of Tiles
+** By Number Of Tiles **
 `slicer.slice_images_by_number(number_tiles=4)`
 
-* #### By Specific Size
+** By Specific Size **
 `slicer.slice_images_by_size(tile_size=(418,279), tile_overlap=0)`
 
-####  Only Bounding Box Annotations
-* #### By Number Of Tiles
+#### Slicing Only Bounding Box Annotations
+** By Number Of Tiles **
 `slicer.slice_bboxes_by_number(number_tiles=4)`
 
-* #### By Specifc Size
+** By Specifc Size **
 `slicer.slice_bboxes_by_size(tile_size=(418,279), tile_overlap=0)`
