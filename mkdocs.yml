@@ -1,0 +1,10 @@
+site_name: image_bbox_slicer
+
+nav:
+- Home: 'index.md'
+- Quick Demo: 'quick-demo.md'
+- Other Functions: 'other-functions.md'
+- License: 'license.md'
+
+theme: readthedocs
+repo_url: https://github.com/akshaychandra21/image_bbox_slicer

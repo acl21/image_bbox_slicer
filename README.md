@@ -1,13 +1,15 @@
 # image_bbox_slicer [![](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
 
-This easy-to-use library splits images and its bounding box annotations into tiles. This can split images and annotations both by specific sizes and into any arbitrary number of tiles (equal parts).
+This easy-to-use library splits images and its bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts.
 
 <div align="center">
 <img src="imgs/ibs_demo.jpg" alt="Partial Labels Example" style="width: 500px;" />
 </div>
 
 ## Installation
-```$ pip install image_bbox_slicer```
+```python
+$ pip install image_bbox_slicer
+```
 
 _Requirements:_
 ```python
@@ -17,8 +19,6 @@ pascal-voc-writer==0.1.4
 matplotlib==3.0.3
 ```
 
-
-
 ## Usage - A Quick Demo
 _Note: This usage demo can be found in `demo.ipynb` in the repo._
 
@@ -26,9 +26,9 @@ _Note: This usage demo can be found in `demo.ipynb` in the repo._
 import image_bbox_slicer as ibs
 ```
 
-### Configure `Slicer` Object
+## Create And Configure `Slicer` Object
 
-#### Setting Paths To Source And Destination Directories
+### Setting Paths To Source And Destination Directories.
 You must configure paths to source and destination directories like the following. 
 
 ```python
@@ -54,7 +54,7 @@ The above images show the difference in slicing with and without partial labels.
 slicer.keep_partial_labels = True
 ```
 
-#### Storing The Mapping
+#### Before-After Mapping
 
 You can choose to store the mapping between file names of the images before and after slicing by setting the `Slicer` object's `save_before_after_map` instance variable to `True`. By default it is set to `False`.
 
@@ -64,7 +64,7 @@ Typically, `mapper.csv` looks like the following:
 |------------|---------------------------------|
 | 2102       | 000001, 000002, 000003, 000004  |
 | 3931       | 000005, 000005, 000007, 000008  |
-| test_image | 000009, 0000102, 000011, 000012 |
+| test_image | 000009, 000010, 000011, 000012  |
 | ...        | ...                             |
 ```
 
@@ -94,7 +94,6 @@ slicer.visualize_random()
 
 #### By Specific Size
 
-
 ```python
 slicer.slice_by_size(tile_size=(418,279), tile_overlap=0)
 slicer.visualize_random()
@@ -107,10 +106,9 @@ slicer.visualize_random()
 <img src="imgs/output_12_2.png" alt="Output4" style="width: 200px;" />
 </div>
 
-_Note:_
+*Note: `visualize_random()` randomly picks a recently sliced image from the directory for plotting.*
 
-*`visualize_random()` randomly picks a recently sliced image from the directory for plotting.*
-### Slicing Separately
+### Other Slicing Functions
 
 #### Only Images
 
