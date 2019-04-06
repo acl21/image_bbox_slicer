@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
   name = 'image_bbox_slicer',
   packages = ['image_bbox_slicer'],   
-  version = '0.1.2',      
+  version = '0.1.3',      
   license='MIT',        
-  long_description = open('docs/DESC.md').read() + '\n\n' + open('HISTORY.md').read(),   
+  long_description = 'This easy-to-use library splits images and its bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts. Read the docs at https://image-bbox-slicer.readthedocs.io/en/latest/.',   
   author = 'AKSHAY CHANDRA LAGANDULA',
   author_email = 'akshaychandra111@gmail.com',
   url = 'https://github.com/akshaychandra21/image_bbox_slicer/',
-  download_url = 'https://github.com/akshaychandra21/image_bbox_slicer/archive/v0.1.2.tar.gz',
+  download_url = 'https://github.com/akshaychandra21/image_bbox_slicer/archive/v0.1.3.tar.gz',
   keywords = ['IMAGE SLICER', 'BOUNDING BOX SLICER', 'SLICER', 'PASCAL VOC SLICER', 'OBJECT DETECTION'],  
   install_requires=[            
 		'Pillow',
