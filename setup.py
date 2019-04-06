@@ -1,6 +1,6 @@
 from distutils.core import setup
 setup(
-  name = 'image_bbox_slicer
+  name = 'image_bbox_slicer',
   packages = ['image_bbox_slicer'],   
   version = '0.1.0',      
   license='MIT',        
