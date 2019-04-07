@@ -4,7 +4,7 @@
 This easy-to-use library splits images and its bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts. Read the docs [here](https://image-bbox-slicer.readthedocs.io/en/latest/).
 
 <div align="center">
-<img src="imgs/ibs_demo.jpg" alt="Partial Labels Example" style="width: 500px;" />
+<img src="imgs/ibs_demo.jpg" alt="Partial Labels Example" />
 </div>
 Currently, this library only supports bounding box annotations in [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) format. And as of now, there is **no command line execution support**. 
 
