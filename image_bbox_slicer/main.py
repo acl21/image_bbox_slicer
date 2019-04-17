@@ -36,6 +36,10 @@ class Slicer(object):
         A boolean flag to denote if mapping between 
         original file names and post-slicing file names in a csv or not. 
         Default value is `False`.
+    ignore_empty_tiles : bool
+        A boolean flag to denote if tiles with no labels post-slicing
+        should be ignored or not.
+        Default value is `True`.
     """
 
     def __init__(self):
@@ -54,6 +58,9 @@ class Slicer(object):
         self.ANN_DST = os.path.join(os.getcwd(), 'sliced_annotations')
         self.keep_partial_labels = False
         self.save_before_after_map = False
+        self.ignore_empty_tiles = True
+        self._ignore_tiles = []
+        self._just_image_call = True
 
     def config_dirs(self, img_src, ann_src,
                     img_dst=os.path.join(os.getcwd(), 'sliced_images'),
@@ -87,8 +94,9 @@ class Slicer(object):
         self.ANN_SRC = ann_src
         self.ANN_DST = ann_dst
 
-    def get_tiles(self, img_size, tile_size, tile_overlap):
-        """Generates a list coordinates of all the tiles after validating the values.
+    def __get_tiles(self, img_size, tile_size, tile_overlap):
+        """Generates a list coordinates of all the tiles after validating the values. 
+        Private Method.
 
         Parameters
         ----------
@@ -134,8 +142,11 @@ class Slicer(object):
         ----------
         None
         """
-        self.slice_images_by_size(tile_size, tile_overlap)
+        self._just_image_call = False
         self.slice_bboxes_by_size(tile_size, tile_overlap)
+        self.slice_images_by_size(tile_size, tile_overlap)
+        self._ignore_tiles = []
+        self._just_image_call = True
 
     def slice_by_number(self, number_tiles):
         """Slices both images and box annotations in source directories into specified number of tiles.
@@ -149,8 +160,11 @@ class Slicer(object):
         ----------
         None
         """
-        self.slice_images_by_number(number_tiles)
+        self._just_image_call = False
         self.slice_bboxes_by_number(number_tiles)
+        self.slice_images_by_number(number_tiles)
+        self._ignore_tiles = []
+        self._just_image_call = True
 
     def slice_images_by_size(self, tile_size, tile_overlap=0.0):
         """Slices each image in the source directory by specified size and overlap.
@@ -169,6 +183,8 @@ class Slicer(object):
         """
         validate_tile_size(tile_size)
         validate_overlap(tile_overlap)
+        if self._just_image_call:
+            self.ignore_empty_tiles = []
         mapper = self.__slice_images(tile_size, tile_overlap, number_tiles=-1)
         if self.save_before_after_map:
             save_before_after_map_csv(mapper, self.IMG_DST)
@@ -186,10 +202,12 @@ class Slicer(object):
         None
         """
         validate_number_tiles(number_tiles)
+        if self._just_image_call:
+            self.ignore_empty_tiles = []
         mapper = self.__slice_images(None, None, number_tiles=number_tiles)
         if self.save_before_after_map:
             save_before_after_map_csv(mapper, self.IMG_DST)
-
+        
     def __slice_images(self, tile_size, tile_overlap, number_tiles):
         """
         Private Method
@@ -211,11 +229,15 @@ class Slicer(object):
                 tile_size = (tile_w, tile_h)
                 tile_overlap = 0.0
 
-            tiles = self.get_tiles(im.size, tile_size, tile_overlap)
+            tiles = self.__get_tiles(im.size, tile_size, tile_overlap)
             new_ids = []
             for tile in tiles:
                 new_im = im.crop(tile)
                 img_id_str = str('{:06d}'.format(img_no))
+                if len(self._ignore_tiles) != 0:
+                    if img_id_str in self._ignore_tiles:
+                        self._ignore_tiles.remove(img_id_str)
+                        continue
                 new_im.save(
                     '{}/{}.{}'.format(self.IMG_DST, img_id_str, file_type))
                 new_ids.append(img_id_str)
@@ -242,6 +264,7 @@ class Slicer(object):
         """
         validate_tile_size(tile_size)
         validate_overlap(tile_overlap)
+        self._ignore_tiles = []
         mapper = self.__slice_bboxes(tile_size, tile_overlap, number_tiles=-1)
         if self.save_before_after_map:
             save_before_after_map_csv(mapper, self.ANN_DST)
@@ -259,6 +282,7 @@ class Slicer(object):
         None
         """
         validate_number_tiles(number_tiles)
+        self._ignore_tiles = []
         mapper = self.__slice_bboxes(None, None, number_tiles=number_tiles)
         if self.save_before_after_map:
             save_before_after_map_csv(mapper, self.ANN_DST)
@@ -269,6 +293,7 @@ class Slicer(object):
         """
         img_no = 1
         mapper = {}
+        empty_count = 0
 
         for xml_file in sorted(glob.glob(self.ANN_SRC + '/*.xml')):
             root, objects = extract_from_xml(xml_file)
@@ -284,24 +309,26 @@ class Slicer(object):
                 tile_overlap = 0.0
             else:
                 tile_w, tile_h = tile_size
-            tiles = self.get_tiles((im_w, im_h), tile_size, tile_overlap)
+            tiles = self.__get_tiles((im_w, im_h), tile_size, tile_overlap)
             tile_ids = []
+
             for tile in tiles:
                 img_no_str = '{:06d}'.format(img_no)
-                voc_writer = Writer(
-                    '{}'.format(img_no_str), tile_w, tile_h)
+                voc_writer = Writer('{}'.format(img_no_str), tile_w, tile_h)
                 for obj in objects:
                     obj_lbl = obj[-4:]
                     points_info = which_points_lie(obj_lbl, tile)
 
                     if points_info == Points.NONE:
+                        empty_count += 1
                         continue
 
-                    elif points_info == Points.ALL:         # All points lie inside the tile
+                    elif points_info == Points.ALL:       # All points lie inside the tile
                         new_lbl = (obj_lbl[0] - tile[0], obj_lbl[1] - tile[1],
                                    obj_lbl[2] - tile[0], obj_lbl[3] - tile[1])
 
-                    elif not self.keep_partial_labels:            # Ignore partial labels based on configuration
+                    elif not self.keep_partial_labels:    # Ignore partial labels based on configuration
+                        empty_count += 1
                         continue
 
                     elif points_info == Points.P1:
@@ -338,9 +365,14 @@ class Slicer(object):
 
                     voc_writer.addObject(obj[0], new_lbl[0], new_lbl[1], new_lbl[2], new_lbl[3],
                                          obj[1], obj[2], obj[3])
-                voc_writer.save('{}/{}.xml'.format(self.ANN_DST, img_no_str))
-                tile_ids.append(img_no_str)
-                img_no += 1
+                if self.ignore_empty_tiles and (empty_count == len(objects)):
+                    self._ignore_tiles.append(img_no_str)
+                else:
+                    voc_writer.save(
+                        '{}/{}.xml'.format(self.ANN_DST, img_no_str))
+                    tile_ids.append(img_no_str)
+                    img_no += 1
+                empty_count = 0
             mapper[im_filename] = tile_ids
 
         print('Obtained {} annotation slices!'.format(img_no-1))
@@ -497,7 +529,8 @@ class Slicer(object):
             else:
                 w_scale, h_scale = resize_factor, resize_factor
                 new_size = [0, 0]
-                new_size[0], new_size[1] = int(im_w * w_scale), int(im_h * h_scale)
+                new_size[0], new_size[1] = int(
+                    im_w * w_scale), int(im_h * h_scale)
                 new_size = tuple(new_size)
 
             voc_writer = Writer(

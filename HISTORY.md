@@ -1,3 +1,7 @@
+### 0.1.4 (04/17/2019)
+* Added image and box annotation resizing feature.
+* User can now choose to ignore empty tiles i.e. tiles with no labels.
+
 ### 0.1.3 (04/06/2019)
 * More PyPi issues fixed
 

@@ -3,7 +3,7 @@ site_name: image_bbox_slicer
 nav:
 - Home: 'index.md'
 - Quick Demo: 'quick-demo.md'
-- Other Functions: 'other-functions.md'
+- Some Useful Functions: 'useful-functions.md'
 - License: 'license.md'
 
 theme: readthedocs
