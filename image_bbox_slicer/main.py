@@ -93,9 +93,9 @@ class Slicer(object):
         Parameters
         ----------
         img_size : tuple
-            Size (width, height) of the original image.
+            Size of the original image in pixels, as a 2-tuple: (width, height).
         tile_size : tuple
-            Size (width, height) of each tile.
+            Size of each tile in pixels, as a 2-tuple: (width, height).
         tile_overlap: float  
             Percentage of tile overlap between two consecutive strides.
 
@@ -158,7 +158,7 @@ class Slicer(object):
         Parameters
         ----------
         tile_size : tuple
-            Size (width, height) of each tile.
+            Size of each tile in pixels, as a 2-tuple: (width, height).
         tile_overlap: float, optional  
             Percentage of tile overlap between two consecutive strides.
             Default value is `0`.
@@ -231,7 +231,7 @@ class Slicer(object):
         Parameters
         ----------
         tile_size : tuple
-            Size (width, height) of each tile.
+            Size of each tile in pixels, as a 2-tuple: (width, height).
         tile_overlap: float, optional  
             Percentage of tile overlap between two consecutive strides.
             Default value is `0`.
@@ -275,10 +275,7 @@ class Slicer(object):
             im_w, im_h = int(root.find('size')[0].text), int(
                 root.find('size')[1].text)
             im_filename = root.find('filename').text.split('.')[0]
-            if '.' in root.find('filename').text:
-                im_format = root.find('filename').text.split('.')[-1].lower()
-            else:
-                im_format = 'jpg'
+
             if number_tiles > 0:
                 n_cols, n_rows = calc_columns_rows(number_tiles)
                 tile_w = int(floor(im_w / n_cols))
@@ -292,7 +289,7 @@ class Slicer(object):
             for tile in tiles:
                 img_no_str = '{:06d}'.format(img_no)
                 voc_writer = Writer(
-                    '{}/{}.{}'.format(self.IMG_DST, img_no_str, im_format), tile_w, tile_h)
+                    '{}'.format(img_no_str), tile_w, tile_h)
                 for obj in objects:
                     obj_lbl = obj[-4:]
                     points_info = which_points_lie(obj_lbl, tile)
@@ -349,9 +346,176 @@ class Slicer(object):
         print('Obtained {} annotation slices!'.format(img_no-1))
         return mapper
 
-    def visualize_random(self, map_dir=None):
-        """Picks an image randomly and visualizes unsliced and sliced images using `matplotlib`.
+    def resize_by_size(self, new_size, resample=0):
+        """Resizes both images and box annotations in source directories to specified size `new_size`.
 
+        Parameters
+        ----------
+        new_size : tuple
+            The requested size in pixels, as a 2-tuple: (width, height)
+        resample: int, optional  
+            An optional resampling filter, same as the one used in PIL.Image.resize() function.
+            Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
+            `0` (Default) for NEAREST (nearest neighbour)
+            `1` for LANCZOS/ANTIALIAS (a high-quality downsampling filter)
+            `2` for BILINEAR/LINEAR (linear interpolation)
+            `3` for BICUBIC/CUBIC (cubic spline interpolation)
+
+        Returns
+        ----------
+        None
+        """
+        self.resize_images_by_size(new_size, resample)
+        self.resize_bboxes_by_size(new_size)
+
+    def resize_images_by_size(self, new_size, resample=0):
+        """Resizes images in the image source directory to specified size `new_size`.
+
+        Parameters
+        ----------
+        new_size : tuple
+            The requested size in pixels, as a 2-tuple: (width, height)
+        resample: int, optional  
+            An optional resampling filter, same as the one used in PIL.Image.resize() function.
+            Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
+            `0` (Default) for NEAREST (nearest neighbour)
+            `1` for LANCZOS/ANTIALIAS (a high-quality downsampling filter)
+            `2` for BILINEAR/LINEAR (linear interpolation)
+            `3` for BICUBIC/CUBIC (cubic spline interpolation)
+
+        Returns
+        ----------
+        None
+        """
+        validate_new_size(new_size)
+        self.__resize_images(new_size, resample, None)
+
+    def resize_by_factor(self, resize_factor, resample=0):
+        """Resizes both images and annotations in the source directories by a scaling/resizing factor.
+
+        Parameters
+        ----------
+        resize_factor : float
+            A factor by which the images and the annotations should be scaled.
+        resample: int, optional  
+            An optional resampling filter, same as the one used in PIL.Image.resize() function.
+            Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
+            `0` (Default) for NEAREST (nearest neighbour)
+            `1` for LANCZOS/ANTIALIAS (a high-quality downsampling filter)
+            `2` for BILINEAR/LINEAR (linear interpolation)
+            `3` for BICUBIC/CUBIC (cubic spline interpolation)
+
+        Returns
+        ----------
+        None
+        """
+        validate_resize_factor(resize_factor)
+        self.resize_images_by_factor(resize_factor, resample)
+        self.resize_bboxes_by_factor(resize_factor)
+
+    def resize_images_by_factor(self, resize_factor, resample=0):
+        """Resizes images in the image source directory by a scaling/resizing factor.
+
+        Parameters
+        ----------
+        resize_factor : float
+            A factor by which the images should be scaled.
+        resample: int, optional  
+            An optional resampling filter, same as the one used in PIL.Image.resize() function.
+            Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
+            `0` (Default) for NEAREST (nearest neighbour)
+            `1` for LANCZOS/ANTIALIAS (a high-quality downsampling filter)
+            `2` for BILINEAR/LINEAR (linear interpolation)
+            `3` for BICUBIC/CUBIC (cubic spline interpolation)
+
+        Returns
+        ----------
+        None
+        """
+        validate_resize_factor(resize_factor)
+        self.__resize_images(None, resample, resize_factor)
+
+    def __resize_images(self, new_size, resample, resize_factor):
+        """Private Method
+        """
+        for file in sorted(glob.glob(self.IMG_SRC + "/*")):
+            file_name = file.split('/')[-1].split('.')[0]
+            file_type = file.split('/')[-1].split('.')[-1].lower()
+            if file_type not in IMG_FORMAT_LIST:
+                continue
+            im = Image.open(file)
+            if resize_factor is not None:
+                new_size = [0, 0]
+                new_size[0] = int(im.size[0] * resize_factor)
+                new_size[1] = int(im.size[1] * resize_factor)
+                new_size = tuple(new_size)
+
+            new_im = im.resize(size=new_size, resample=resample)
+            new_im.save('{}/{}.{}'.format(self.IMG_DST, file_name, file_type))
+
+    def resize_bboxes_by_size(self, new_size):
+        """Resizes bounding box annotations in the source directory to specified size `new_size`.
+
+        Parameters
+        ----------
+        new_size : tuple
+            The requested size in pixels, as a 2-tuple: (width, height)
+
+        Returns
+        ----------
+        None
+        """
+        validate_new_size(new_size)
+        self.__resize_bboxes(new_size, None)
+
+    def resize_bboxes_by_factor(self, resize_factor):
+        """Resizes bounding box annotations in the source directory by a scaling/resizing factor.
+
+        Parameters
+        ----------
+        resize_factor : float
+            A factor by which the bounding box annotations should be scaled.
+
+        Returns
+        ----------
+        None
+        """
+        validate_resize_factor(resize_factor)
+        self.__resize_bboxes(None, resize_factor)
+
+    def __resize_bboxes(self, new_size, resize_factor):
+        """Private Method
+        """
+        for xml_file in sorted(glob.glob(self.ANN_SRC + '/*.xml')):
+            root, objects = extract_from_xml(xml_file)
+            im_w, im_h = int(root.find('size')[0].text), int(
+                root.find('size')[1].text)
+            im_filename = root.find('filename').text.split('.')[0]
+            an_filename = xml_file.split('/')[-1].split('.')[0]
+            if resize_factor is None:
+                w_scale, h_scale = new_size[0]/im_w, new_size[1]/im_h
+            else:
+                w_scale, h_scale = resize_factor, resize_factor
+                new_size = [0, 0]
+                new_size[0], new_size[1] = int(im_w * w_scale), int(im_h * h_scale)
+                new_size = tuple(new_size)
+
+            voc_writer = Writer(
+                '{}'.format(im_filename), new_size[0], new_size[1])
+
+            for obj in objects:
+                obj_lbl = list(obj[-4:])
+                obj_lbl[0] = int(obj_lbl[0] * w_scale)
+                obj_lbl[1] = int(obj_lbl[1] * h_scale)
+                obj_lbl[2] = int(obj_lbl[2] * w_scale)
+                obj_lbl[3] = int(obj_lbl[3] * h_scale)
+
+                voc_writer.addObject(obj[0], obj_lbl[0], obj_lbl[1], obj_lbl[2], obj_lbl[3],
+                                     obj[1], obj[2], obj[3])
+            voc_writer.save('{}/{}.xml'.format(self.ANN_DST, an_filename))
+
+    def visualize_sliced_random(self, map_dir=None):
+        """Picks an image randomly and visualizes unsliced and sliced images using `matplotlib`.
 
         Parameters:
         ----------
@@ -384,6 +548,24 @@ class Slicer(object):
 
             plot_image_boxes(self.IMG_SRC, self.ANN_SRC, src_file)
             plot_image_boxes(self.IMG_DST, self.ANN_DST, tile_files)
+
+    def visualize_resized_random(self):
+        """Picks an image randomly and visualizes original and resized images using `matplotlib`
+
+        Parameters:
+        ----------
+        None 
+
+        Returns:
+        ----------
+        None
+            However, displays the final plots.
+        """
+        im_file = random.choice(list(glob.glob('{}/*'.format(self.IMG_SRC))))
+        file_name = im_file.split('/')[-1].split('.')[0]
+
+        plot_image_boxes(self.IMG_SRC, self.ANN_SRC, file_name)
+        plot_image_boxes(self.IMG_DST, self.ANN_DST, file_name)
 
 
 class Points(Enum):

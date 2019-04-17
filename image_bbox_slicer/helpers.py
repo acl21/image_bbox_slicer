@@ -32,7 +32,7 @@ def calc_columns_rows(n):
     Returns
     ----------
     tuple
-        (`num_columns`, `num_rows`) required to divide an image into.
+        Size required to divide an image into in pixels, as a 2-tuple: (columns, rows)..
     """
     num_columns = int(ceil(sqrt(n)))
     num_rows = int(ceil(n / float(num_columns)))
@@ -75,7 +75,7 @@ def validate_number_tiles(number_tiles):
 
 
 def validate_dir(dir_path, src=True):
-    """Validates if provided directory path exists or not. 
+    """Validates if provided directory path exists or not.
 
     Creates directory when in destination mode if don't exist.
 
@@ -84,8 +84,8 @@ def validate_dir(dir_path, src=True):
     dir_path : str
         path/to/directory
     src : bool, optional
-        Default value is `True`. 
-        Flag to denote if method is called in source mode or destination mode. 
+        Default value is `True`.
+        Flag to denote if method is called in source mode or destination mode.
         Must be set to False when validating destination directories
 
     Returns
@@ -97,7 +97,7 @@ def validate_dir(dir_path, src=True):
     FileNotFoundError
         If `src` is `True` and `dir_path` directory either doesn't exist or is empty.
     UserWarning
-        If `src` is `False` and `dir_path` directory either doesn't exist or already has files.  
+        If `src` is `False` and `dir_path` directory either doesn't exist or already has files.
     """
     if src:
         if os.path.isdir(dir_path):
@@ -180,9 +180,9 @@ def validate_tile_size(tile_size, img_size=None):
     Parameters
     ----------
     tile_size : tuple
-        A tuple with two values (width, column) of the tile respectively
+        Size of each tile in pixels, as a 2-tuple: (width, height).
     img_size : tuple, optional
-        A tuple with two values (width, column) of the image respectively
+        Size of original image in pixels, as a 2-tuple: (width, height).
 
     Returns
     ----------
@@ -214,16 +214,66 @@ def validate_tile_size(tile_size, img_size=None):
                 'Image size must be a tuple. The argument was of type {}'.format(type(img_size)))
 
 
-def save_before_after_map_csv(mapper, path):
-    """Saves a dictionary in a csv file.
+def validate_new_size(new_size):
+    """Validates `new_size` argument.
     
     Parameters
     ----------
+    new_size : tuple
+        The requested size in pixels, as a 2-tuple: (width, height)
+
+    Returns
+    ----------
+    None
+
+    Raises
+    ----------
+    TypeError
+        When `new_size` is not a tuple.
+    ValueError
+        When `new_size` is a tuple but not a 2-tuple
+    """
+    if not isinstance(new_size, tuple):
+        raise TypeError(
+            'Image size must be a tuple. The argument was of type {}'.format(type(new_size)))
+    else:
+        if len(new_size) != 2:
+            raise ValueError(
+                'Image size must be a tuple of size 2 i.e., (w, h). The tuple provided was {}'.format(new_size))
+
+
+def validate_resize_factor(factor):
+    """Validates resizing/scaling factor argument.
+
+    Parameters
+    ----------
+    factor : float
+        A factor by which the images or the bounding box annotations should be scaled.
+
+    Returns
+    ----------
+    None
+
+    Raises
+    ----------
+    ValueError
+        When `factor` is not positive.
+    """
+    if factor <= 0:
+        raise ValueError(
+            'Resize factor must be positive. The value provided was {}'.format(factor))
+
+
+def save_before_after_map_csv(mapper, path):
+    """Saves a dictionary in a csv file.
+
+    Parameters
+    ----------
     mapper : dict
-        Dictionary containing pre-sliced file names as keys and their respective sliced file names as values. 
+        Dictionary containing pre-sliced file names as keys and their respective sliced file names as values.
     path : str
         /path/to/target/directory
-    
+
     Returns
     ----------
     None
@@ -237,7 +287,7 @@ def save_before_after_map_csv(mapper, path):
 
 def extract_from_xml(file):
     """Extracts useful info (classes, bounding boxes, filename etc.) from annotation (XML) file.
-    
+
     Parameters
     ----------
     file : str
@@ -252,15 +302,30 @@ def extract_from_xml(file):
     objects = []
     tree = ET.parse(file)
     root = tree.getroot()
-    for member in root.findall('object'):
-        value = (member[0].text,
-                 member[1].text,
-                 member[2].text,
-                 member[3].text,
-                 int(member[4][0].text),
-                 int(member[4][1].text),
-                 int(member[4][2].text),
-                 int(member[4][3].text)
+    for obj in root.findall('object'):
+        name = obj.find('name').text
+        pose = obj.find('pose').text
+        truncated = obj.find('truncated').text
+        difficult = obj.find('difficult').text
+        bbox = obj.find('bndbox')
+        xmin, ymin, xmax, ymax = 0, 0, 0, 0
+        for point in bbox:
+            if point.tag == 'xmin':
+                xmin = point.text
+            elif point.tag == 'ymin':
+                ymin = point.text
+            elif point.tag == 'xmax':
+                xmax = point.text
+            elif point.tag == 'ymax':
+                ymax = point.text
+        value = (name,
+                 pose,
+                 int(truncated),
+                 int(difficult),
+                 int(xmin.split('.')[0]),
+                 int(ymin.split('.')[0]),
+                 int(xmax.split('.')[0]),
+                 int(ymax.split('.')[0])
                  )
         objects.append(value)
     return root, objects
@@ -269,9 +334,9 @@ def extract_from_xml(file):
 def plot_image_boxes(img_path, ann_path, file_name):
     """Plots bounding boxes on images using `matplotlib`.
 
-    Works in two modes - unsliced and sliced modes. 
+    Works in two modes - unsliced and sliced modes.
     In unsliced mode, only one picture is plotted.
-    In sliced mode, all the slices are plotted. 
+    In sliced mode, all the slices are plotted.
 
     Parameters
     ----------
