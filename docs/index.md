@@ -1,6 +1,6 @@
 # Image and Box Annotation Slicer
 
-This easy-to-use library splits images and its bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts. It can also resize them, both by specific sizes and by a resizing/scaling factor.
+This easy-to-use library is a data transformer sometimes useful in Object Detection tasks. It splits images and its bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts. It can also resize them, both by specific sizes and by a resizing/scaling factor.
 
 <div align="center">
 <img src="img/ibs_demo.jpg" alt="Overview"  />
