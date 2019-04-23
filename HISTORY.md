@@ -1,3 +1,6 @@
+### 0.1.6 (04/23/2019)
+* Fixed some bugs.
+
 ### 0.1.5 (04/23/2019)
 * Fixed an issue related to optional tags in xml files.
 

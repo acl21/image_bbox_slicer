@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
   name = 'image_bbox_slicer',
   packages = ['image_bbox_slicer'],   
-  version = '0.1.5',      
+  version = '0.2',      
   license='MIT',        
-  long_description = 'This easy-to-use library is a data transformer useful in Object Detection tasks. It splits images and their bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts. It can also resize them, both by specific sizes and by a resizing/scaling factor. Read the docs at https://image-bbox-slicer.readthedocs.io/en/latest/.',   
+  long_description = 'This easy-to-use library is a data transformer useful in Object Detection tasks. It splits images and their bounding box annotations into tiles, both into specific sizes and into any arbitrary number of equal parts. It can also resize them, both by specific sizes and by a resizing/scaling factor. \n\nRead the docs at https://image-bbox-slicer.readthedocs.io/en/latest/.',   
   author = 'AKSHAY CHANDRA LAGANDULA',
   author_email = 'akshaychandra111@gmail.com',
   url = 'https://github.com/akshaychandra21/image_bbox_slicer/',
-  download_url = 'https://github.com/akshaychandra21/image_bbox_slicer/archive/v0.1.5.tar.gz',
+  download_url = 'https://github.com/akshaychandra21/image_bbox_slicer/archive/v0.2.tar.gz',
   keywords = ['Image Slicer', 'Bounding Box Annotations Slicer', 'Slicer', 'PASCAL VOC Slicer', 'Object Detection', 'Resize Images', 'Resize Bounding Box Annotations'],  
   install_requires=[            
 		'Pillow',
