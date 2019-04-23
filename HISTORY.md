@@ -1,3 +1,6 @@
+### 0.1.5 (04/23/2019)
+* Fixed an issue related to optional tags in xml files.
+
 ### 0.1.4 (04/17/2019)
 * Added image and box annotation resizing feature.
 * User can now choose to ignore empty tiles i.e. tiles with no labels.

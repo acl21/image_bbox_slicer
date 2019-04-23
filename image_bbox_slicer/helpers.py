@@ -304,9 +304,18 @@ def extract_from_xml(file):
     root = tree.getroot()
     for obj in root.findall('object'):
         name = obj.find('name').text
-        pose = obj.find('pose').text
-        truncated = obj.find('truncated').text
-        difficult = obj.find('difficult').text
+        pose = 'Unknown'
+        truncated = '0'
+        difficult = '0'
+        if obj.find('pose') is not None:
+            pose = obj.find('pose').text
+            
+        if obj.find('truncated') is not None:
+            truncated = obj.find('truncated')
+
+        if obj.find('difficult') is not None:
+            difficult = obj.find('difficult').text
+
         bbox = obj.find('bndbox')
         xmin, ymin, xmax, ymax = 0, 0, 0, 0
         for point in bbox:
