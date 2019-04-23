@@ -311,7 +311,7 @@ def extract_from_xml(file):
             pose = obj.find('pose').text
             
         if obj.find('truncated') is not None:
-            truncated = obj.find('truncated')
+            truncated = obj.find('truncated').text
 
         if obj.find('difficult') is not None:
             difficult = obj.find('difficult').text
