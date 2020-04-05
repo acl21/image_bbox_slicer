@@ -9,6 +9,8 @@ This easy-to-use library is a data transformer sometimes useful in Object Detect
 
 Currently, this library only supports bounding box annotations in [PASCAL VOC](http://host.robots.ox.ac.uk/pascal/VOC/) format. And as of now, there is **no command line execution support**. Please raise an issue if needed. 
 
+## UPDATE: This tool was only tested on Linux/Ubuntu. Please find a _potential fix_ to make it work on Windows [here](https://github.com/acl21/image_bbox_slicer/issues/2).  
+
 ## Installation
 ```python
 $ pip install image_bbox_slicer
