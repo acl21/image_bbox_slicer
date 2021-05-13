@@ -8,7 +8,7 @@ setup(
   author = 'Akshay L Chandra',
   author_email = 'akshaychandra111@gmail.com',
   url = 'https://github.com/acl21/image_bbox_slicer/',
-  download_url = 'https://github.com/acl21/image_bbox_slicer/archive/v0.3.tar.gz',
+  download_url = 'https://github.com/acl21/image_bbox_slicer/archive/refs/tags/v0.3.tar.gz',
   keywords = ['Image Slicer', 'Bounding Box Annotations Slicer', 'Slicer', 'PASCAL VOC Slicer', 'Object Detection', 'Resize Images', 'Resize Bounding Box Annotations'],  
   install_requires=[            
 		'Pillow',
