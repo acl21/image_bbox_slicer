@@ -7,8 +7,12 @@ import glob
 import random
 from PIL import Image
 from pascal_voc_writer import Writer
-from .helpers import *
+from image_bbox_slicer.helpers import *
 
+if os.environ.get('OS','') == 'Windows_NT':
+    separator = '\\'
+else:
+    separator = '/'
 
 class Slicer(object):
     """
@@ -215,9 +219,9 @@ class Slicer(object):
         mapper = {}
         img_no = 1
 
-        for file in sorted(glob.glob(self.IMG_SRC + "/*")):
-            file_name = file.split('/')[-1].split('.')[0]
-            file_type = file.split('/')[-1].split('.')[-1].lower()
+        for file in sorted(glob.glob(self.IMG_SRC + separator + "*")):
+            file_name = file.split(separator)[-1].split('.')[0]
+            file_type = file.split(separator)[-1].split('.')[-1].lower()
             if file_type.lower() not in IMG_FORMAT_LIST:
                 continue
             im = Image.open(file)
@@ -239,7 +243,7 @@ class Slicer(object):
                         self._ignore_tiles.remove(img_id_str)
                         continue
                 new_im.save(
-                    '{}/{}.{}'.format(self.IMG_DST, img_id_str, file_type))
+                    '{}{}{}.{}'.format(self.IMG_DST, separator, img_id_str, file_type))
                 new_ids.append(img_id_str)
                 img_no += 1
             mapper[file_name] = new_ids
@@ -295,12 +299,12 @@ class Slicer(object):
         mapper = {}
         empty_count = 0
 
-        for xml_file in sorted(glob.glob(self.ANN_SRC + '/*.xml')):
+        for xml_file in sorted(glob.glob(self.ANN_SRC + separator + '*.xml')):
             root, objects = extract_from_xml(xml_file)
             im_w, im_h = int(root.find('size')[0].text), int(
                 root.find('size')[1].text)
             im_filename = root.find('filename').text.split('.')[0]
-
+            extn = root.find('filename').text.split('.')[1]
             if number_tiles > 0:
                 n_cols, n_rows = calc_columns_rows(number_tiles)
                 tile_w = int(floor(im_w / n_cols))
@@ -314,7 +318,7 @@ class Slicer(object):
 
             for tile in tiles:
                 img_no_str = '{:06d}'.format(img_no)
-                voc_writer = Writer('{}'.format(img_no_str), tile_w, tile_h)
+                voc_writer = Writer('{}.{}'.format(img_no_str, extn), tile_w, tile_h)
                 for obj in objects:
                     obj_lbl = obj[-4:]
                     points_info = which_points_lie(obj_lbl, tile)
@@ -369,7 +373,7 @@ class Slicer(object):
                     self._ignore_tiles.append(img_no_str)
                 else:
                     voc_writer.save(
-                        '{}/{}.xml'.format(self.ANN_DST, img_no_str))
+                        '{}{}{}.xml'.format(self.ANN_DST, separator, img_no_str))
                     tile_ids.append(img_no_str)
                     img_no += 1
                 empty_count = 0
@@ -470,9 +474,9 @@ class Slicer(object):
     def __resize_images(self, new_size, resample, resize_factor):
         """Private Method
         """
-        for file in sorted(glob.glob(self.IMG_SRC + "/*")):
-            file_name = file.split('/')[-1].split('.')[0]
-            file_type = file.split('/')[-1].split('.')[-1].lower()
+        for file in sorted(glob.glob(self.IMG_SRC + separator + "*")):
+            file_name = file.split(separator)[-1].split('.')[0]
+            file_type = file.split(separator)[-1].split('.')[-1].lower()
             if file_type not in IMG_FORMAT_LIST:
                 continue
             im = Image.open(file)
@@ -483,7 +487,7 @@ class Slicer(object):
                 new_size = tuple(new_size)
 
             new_im = im.resize(size=new_size, resample=resample)
-            new_im.save('{}/{}.{}'.format(self.IMG_DST, file_name, file_type))
+            new_im.save('{}{}{}.{}'.format(self.IMG_DST, separator, file_name, file_type))
 
     def resize_bboxes_by_size(self, new_size):
         """Resizes bounding box annotations in the source directory to specified size `new_size`.
@@ -518,12 +522,13 @@ class Slicer(object):
     def __resize_bboxes(self, new_size, resize_factor):
         """Private Method
         """
-        for xml_file in sorted(glob.glob(self.ANN_SRC + '/*.xml')):
+        for xml_file in sorted(glob.glob(self.ANN_SRC + separator + '*.xml')):
             root, objects = extract_from_xml(xml_file)
             im_w, im_h = int(root.find('size')[0].text), int(
                 root.find('size')[1].text)
             im_filename = root.find('filename').text.split('.')[0]
-            an_filename = xml_file.split('/')[-1].split('.')[0]
+            an_filename = xml_file.split(separator)[-1].split('.')[0]
+            extn = root.find('filename').text.split('.')[1]
             if resize_factor is None:
                 w_scale, h_scale = new_size[0]/im_w, new_size[1]/im_h
             else:
@@ -534,7 +539,7 @@ class Slicer(object):
                 new_size = tuple(new_size)
 
             voc_writer = Writer(
-                '{}'.format(im_filename), new_size[0], new_size[1])
+                '{}.{}'.format(im_filename, extn), new_size[0], new_size[1])
 
             for obj in objects:
                 obj_lbl = list(obj[-4:])
@@ -545,7 +550,7 @@ class Slicer(object):
 
                 voc_writer.addObject(obj[0], obj_lbl[0], obj_lbl[1], obj_lbl[2], obj_lbl[3],
                                      obj[1], obj[2], obj[3])
-            voc_writer.save('{}/{}.xml'.format(self.ANN_DST, an_filename))
+            voc_writer.save('{}{}{}.xml'.format(self.ANN_DST, separator, an_filename))
 
     def visualize_sliced_random(self, map_dir=None):
         """Picks an image randomly and visualizes unsliced and sliced images using `matplotlib`.
@@ -567,15 +572,14 @@ class Slicer(object):
         mapping = ''
 
         if map_dir is None:
-            map_path = self.IMG_DST + '/mapper.csv'
+            map_path = self.IMG_DST + separator + 'mapper.csv'
         else:
-            map_path = map_dir + '/mapper.csv'
+            map_path = map_dir + separator + 'mapper.csv'
         with open(map_path) as src_map:
             read_csv = csv.reader(src_map, delimiter=',')
             # Skip the header
             next(read_csv, None)
             mapping = random.choice(list(read_csv))
-
             src_file = mapping[0]
             tile_files = mapping[1:]
 
@@ -594,8 +598,8 @@ class Slicer(object):
         None
             However, displays the final plots.
         """
-        im_file = random.choice(list(glob.glob('{}/*'.format(self.IMG_SRC))))
-        file_name = im_file.split('/')[-1].split('.')[0]
+        im_file = random.choice(list(glob.glob('{}{}*'.format(self.IMG_SRC, separator))))
+        file_name = im_file.split(separator)[-1].split('.')[0]
 
         plot_image_boxes(self.IMG_SRC, self.ANN_SRC, file_name)
         plot_image_boxes(self.IMG_DST, self.ANN_DST, file_name)

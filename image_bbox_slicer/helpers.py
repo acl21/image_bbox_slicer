@@ -15,7 +15,10 @@ from math import sqrt, ceil, floor
 
 
 IMG_FORMAT_LIST = ['jpg', 'jpeg', 'png', 'tiff', 'exif', 'bmp']
-
+if os.environ.get('OS','') == 'Windows_NT':
+    separator = '\\'
+else:
+    separator = '/'
 # Source : Sam Dobson
 # https://github.com/samdobson/image_slicer
 
@@ -37,9 +40,6 @@ def calc_columns_rows(n):
     num_columns = int(ceil(sqrt(n)))
     num_rows = int(ceil(n / float(num_columns)))
     return (num_columns, num_rows)
-
-# Source : Sam Dobson
-# https://github.com/samdobson/image_slicer
 
 
 def validate_number_tiles(number_tiles):
@@ -137,15 +137,17 @@ def validate_file_names(img_src, ann_src):
     Exception
         If `img_src` and `ann_src` do not have matching image and annotation file names respectively.
     """
-    imgs = sorted(glob.glob(img_src + '/*'))
-    anns = sorted(glob.glob(ann_src + '/*.xml'))
+    imgs = sorted(glob.glob(img_src + separator + '*'))
+    anns = sorted(glob.glob(ann_src + separator + '*.xml'))
 
     imgs_filter = [True if x.split(
         '.')[-1].lower() in IMG_FORMAT_LIST else False for x in imgs]
     imgs = list(compress(imgs, imgs_filter))
 
-    imgs = [x.split('/')[-1].split('.')[-2] for x in imgs]
-    anns = [x.split('/')[-1].split('.')[-2] for x in anns]
+
+
+    imgs = [x.split(separator)[-1].split('.')[-2] for x in imgs]
+    anns = [x.split(separator)[-1].split('.')[-2] for x in anns]
 
     if not (imgs == anns):
         raise Exception(
@@ -278,7 +280,7 @@ def save_before_after_map_csv(mapper, path):
     ----------
     None
     """
-    with open('{}/mapper.csv'.format(path), 'w') as f:
+    with open('{}{}mapper.csv'.format(path, separator), 'w') as f:
         f.write("old_name,new_names\n")
         for key in mapper.keys():
             f.write("%s,%s\n" % (key, ','.join(mapper[key])))
@@ -361,13 +363,14 @@ def plot_image_boxes(img_path, ann_path, file_name):
     ----------
     None
     """
+
     # Checking if the file is a source image as the data type
     # Source image - string, tile images - list of strings
     if isinstance(file_name, str):
-        tree = ET.parse(ann_path + '/' + file_name + '.xml')
+        tree = ET.parse(ann_path + separator + file_name + '.xml')
         root = tree.getroot()
 
-        im = Image.open(img_path + '/' + file_name + '.jpg')
+        im = Image.open(img_path + separator + file_name + '.jpg')
         im = np.array(im, dtype=np.uint8)
 
         rois = []
@@ -398,10 +401,10 @@ def plot_image_boxes(img_path, ann_path, file_name):
                                sharey='row', figsize=(10, 7))
         for idx, file in enumerate(file_name):
 
-            tree = ET.parse(ann_path + '/' + file + '.xml')
+            tree = ET.parse(ann_path + separator + file + '.xml')
             root = tree.getroot()
 
-            im = Image.open(img_path + '/' + file + '.jpg')
+            im = Image.open(img_path + separator + file + '.jpg')
             im = np.array(im, dtype=np.uint8)
 
             rois = []
@@ -410,6 +413,7 @@ def plot_image_boxes(img_path, ann_path, file_name):
                              int(member[4][2].text), int(member[4][3].text)))
 
             # Display the image at the right position
+            print(pos[idx][0], pos[idx][1])
             ax[pos[idx][0], pos[idx][1]].imshow(im)
 
             for roi in rois:
