@@ -143,8 +143,8 @@ def validate_file_names(img_src, ann_src):
 
 
 
-    imgs = [x.split(os.sep)[-1].split('.')[-2] for x in imgs]
-    anns = [x.split(os.sep)[-1].split('.')[-2] for x in anns]
+    imgs = [os.path.splitext(x.split(os.sep)[-1])[0] for x in imgs]
+    anns = [os.path.splitext(x.split(os.sep)[-1])[0] for x in anns]
 
     if not (imgs == anns):
         raise Exception(

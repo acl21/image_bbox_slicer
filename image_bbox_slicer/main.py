@@ -298,8 +298,8 @@ class Slicer(object):
             root, objects = extract_from_xml(xml_file)
             im_w, im_h = int(root.find('size')[0].text), int(
                 root.find('size')[1].text)
-            im_filename = root.find('filename').text.split('.')[0]
-            extn = root.find('filename').text.split('.')[1]
+            im_filename = os.path.splitext(root.find('filename').text)[0]
+            extn = os.path.splitext(root.find('filename').text)[1]
             if number_tiles > 0:
                 n_cols, n_rows = calc_columns_rows(number_tiles)
                 tile_w = int(floor(im_w / n_cols))
@@ -313,7 +313,7 @@ class Slicer(object):
 
             for tile in tiles:
                 img_no_str = '{:06d}'.format(img_no)
-                voc_writer = Writer('{}.{}'.format(img_no_str, extn), tile_w, tile_h)
+                voc_writer = Writer('{}{}'.format(img_no_str, extn), tile_w, tile_h)
                 for obj in objects:
                     obj_lbl = obj[-4:]
                     points_info = which_points_lie(obj_lbl, tile)
@@ -521,9 +521,9 @@ class Slicer(object):
             root, objects = extract_from_xml(xml_file)
             im_w, im_h = int(root.find('size')[0].text), int(
                 root.find('size')[1].text)
-            im_filename = root.find('filename').text.split('.')[0]
+            im_filename = os.path.splitext(root.find('filename').text)[0]
             an_filename = xml_file.split(os.sep)[-1].split('.')[0]
-            extn = root.find('filename').text.split('.')[1]
+            extn = os.path.splitext(root.find('filename').text)[1]
             if resize_factor is None:
                 w_scale, h_scale = new_size[0]/im_w, new_size[1]/im_h
             else:
@@ -534,7 +534,7 @@ class Slicer(object):
                 new_size = tuple(new_size)
 
             voc_writer = Writer(
-                '{}.{}'.format(im_filename, extn), new_size[0], new_size[1])
+                '{}{}'.format(im_filename, extn), new_size[0], new_size[1])
 
             for obj in objects:
                 obj_lbl = list(obj[-4:])
