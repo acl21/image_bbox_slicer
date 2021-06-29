@@ -313,7 +313,7 @@ class Slicer(object):
 
             for tile in tiles:
                 img_no_str = '{:06d}'.format(img_no)
-                voc_writer = Writer('{}{}'.format(img_no_str, extn), tile_w, tile_h)
+                voc_writer = Writer('{}{}{}{}'.format(self.ANN_DST, os.sep, img_no_str, extn), tile_w, tile_h)
                 for obj in objects:
                     obj_lbl = obj[-4:]
                     points_info = which_points_lie(obj_lbl, tile)
@@ -534,7 +534,7 @@ class Slicer(object):
                 new_size = tuple(new_size)
 
             voc_writer = Writer(
-                '{}{}'.format(im_filename, extn), new_size[0], new_size[1])
+                '{}{}{}{}'.format(self.ANN_DST, os.sep, im_filename, extn), new_size[0], new_size[1])
 
             for obj in objects:
                 obj_lbl = list(obj[-4:])
