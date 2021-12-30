@@ -63,7 +63,7 @@ def validate_number_tiles(number_tiles):
 
         try:
             number_tiles = int(number_tiles)
-        except:
+        except ValueError:
             raise ValueError('number_tiles could not be cast to integer.')
 
         if number_tiles > TILE_LIMIT or number_tiles < 2:
@@ -141,14 +141,13 @@ def validate_file_names(img_src, ann_src):
         '.')[-1].lower() in IMG_FORMAT_LIST else False for x in imgs]
     imgs = list(compress(imgs, imgs_filter))
 
-
-
     imgs = [os.path.splitext(x.split(os.sep)[-1])[0] for x in imgs]
     anns = [os.path.splitext(x.split(os.sep)[-1])[0] for x in anns]
 
     if not (imgs == anns):
         raise Exception(
-            'Each image in `{}` must have its corresponding XML file in `{}` with the same file name.'.format(img_src, ann_src))
+            'Each image in `{}` must have its corresponding XML file in `{}` \
+            with the same file name.'.format(img_src, ann_src))
 
 
 def validate_overlap(tile_overlap):
@@ -170,7 +169,8 @@ def validate_overlap(tile_overlap):
     """
     if not (0.0 <= tile_overlap <= 1.0):
         raise ValueError(
-            'Tile overlap percentage should be between 0 and 1, inclusive. The value provided was {}'.format(tile_overlap))
+            'Tile overlap percentage should be between 0 and 1, inclusive. \
+                The value provided was {}'.format(tile_overlap))
 
 
 def validate_tile_size(tile_size, img_size=None):
@@ -215,7 +215,7 @@ def validate_tile_size(tile_size, img_size=None):
 
 def validate_new_size(new_size):
     """Validates `new_size` argument.
-    
+
     Parameters
     ----------
     new_size : tuple
@@ -308,7 +308,7 @@ def extract_from_xml(file):
         difficult = '0'
         if obj.find('pose') is not None:
             pose = obj.find('pose').text
-            
+
         if obj.find('truncated') is not None:
             truncated = obj.find('truncated').text
 
@@ -410,7 +410,6 @@ def plot_image_boxes(img_path, ann_path, file_name):
                              int(member[4][2].text), int(member[4][3].text)))
 
             # Display the image at the right position
-            print(pos[idx][0], pos[idx][1])
             ax[pos[idx][0], pos[idx][1]].imshow(im)
 
             for roi in rois:

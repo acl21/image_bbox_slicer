@@ -9,6 +9,7 @@ from PIL import Image
 from pascal_voc_writer import Writer
 from image_bbox_slicer.helpers import *
 
+
 class Slicer(object):
     """
     Slicer class.
@@ -17,7 +18,7 @@ class Slicer(object):
     ----------
     IMG_SRC : str
         /path/to/images/source/directory.
-        Default value is the current working directory. 
+        Default value is the current working directory.
     IMG_DST : str
         /path/to/images/destination/directory.
         Default value is the `/sliced_images` in the current working directory.
@@ -32,8 +33,8 @@ class Slicer(object):
         Partial labels are the labels that are partly in a tile post slicing.
         Default value is `False`.
     save_before_after_map : bool
-        A boolean flag to denote if mapping between 
-        original file names and post-slicing file names in a csv or not. 
+        A boolean flag to denote if mapping between
+        original file names and post-slicing file names in a csv or not.
         Default value is `False`.
     ignore_empty_tiles : bool
         A boolean flag to denote if tiles with no labels post-slicing
@@ -43,9 +44,9 @@ class Slicer(object):
 
     def __init__(self):
         """
-        Constructor. 
+        Constructor.
 
-        Assigns default values to path attributes and other preference attributes. 
+        Assigns default values to path attributes and other preference attributes.
 
         Parameters
         ----------
@@ -64,7 +65,7 @@ class Slicer(object):
     def config_dirs(self, img_src, ann_src,
                     img_dst=os.path.join(os.getcwd(), 'sliced_images'),
                     ann_dst=os.path.join(os.getcwd(), 'sliced_annotations')):
-        """Configures paths to source and destination directories after validating them. 
+        """Configures paths to source and destination directories after validating them.
 
         Parameters
         ----------
@@ -94,7 +95,7 @@ class Slicer(object):
         self.ANN_DST = ann_dst
 
     def __get_tiles(self, img_size, tile_size, tile_overlap):
-        """Generates a list coordinates of all the tiles after validating the values. 
+        """Generates a list coordinates of all the tiles after validating the values.
         Private Method.
 
         Parameters
@@ -103,15 +104,15 @@ class Slicer(object):
             Size of the original image in pixels, as a 2-tuple: (width, height).
         tile_size : tuple
             Size of each tile in pixels, as a 2-tuple: (width, height).
-        tile_overlap: float  
+        tile_overlap: float
             Percentage of tile overlap between two consecutive strides.
 
         Returns
         ----------
         list
             A list of tuples.
-            Each holding coordinates of possible tiles 
-            in the format - `(xmin, ymin, xmax, ymax)` 
+            Each holding coordinates of possible tiles
+            in the format - `(xmin, ymin, xmax, ymax)`
         """
         validate_tile_size(tile_size, img_size)
         tiles = []
@@ -133,7 +134,7 @@ class Slicer(object):
         ----------
         tile_size : tuple
             Size (width, height) of each tile.
-        tile_overlap: float, optional  
+        tile_overlap: float, optional
             Percentage of tile overlap between two consecutive strides.
             Default value is `0`.
 
@@ -172,7 +173,7 @@ class Slicer(object):
         ----------
         tile_size : tuple
             Size of each tile in pixels, as a 2-tuple: (width, height).
-        tile_overlap: float, optional  
+        tile_overlap: float, optional
             Percentage of tile overlap between two consecutive strides.
             Default value is `0`.
 
@@ -206,10 +207,9 @@ class Slicer(object):
         mapper = self.__slice_images(None, None, number_tiles=number_tiles)
         if self.save_before_after_map:
             save_before_after_map_csv(mapper, self.IMG_DST)
-        
+
     def __slice_images(self, tile_size, tile_overlap, number_tiles):
-        """
-        Private Method
+        """Private Method
         """
         mapper = {}
         img_no = 1
@@ -253,7 +253,7 @@ class Slicer(object):
         ----------
         tile_size : tuple
             Size of each tile in pixels, as a 2-tuple: (width, height).
-        tile_overlap: float, optional  
+        tile_overlap: float, optional
             Percentage of tile overlap between two consecutive strides.
             Default value is `0`.
 
@@ -384,7 +384,7 @@ class Slicer(object):
         ----------
         new_size : tuple
             The requested size in pixels, as a 2-tuple: (width, height)
-        resample: int, optional  
+        resample: int, optional
             An optional resampling filter, same as the one used in PIL.Image.resize() function.
             Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
             `0` (Default) for NEAREST (nearest neighbour)
@@ -406,7 +406,7 @@ class Slicer(object):
         ----------
         new_size : tuple
             The requested size in pixels, as a 2-tuple: (width, height)
-        resample: int, optional  
+        resample: int, optional
             An optional resampling filter, same as the one used in PIL.Image.resize() function.
             Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
             `0` (Default) for NEAREST (nearest neighbour)
@@ -428,7 +428,7 @@ class Slicer(object):
         ----------
         resize_factor : float
             A factor by which the images and the annotations should be scaled.
-        resample: int, optional  
+        resample: int, optional
             An optional resampling filter, same as the one used in PIL.Image.resize() function.
             Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
             `0` (Default) for NEAREST (nearest neighbour)
@@ -451,7 +451,7 @@ class Slicer(object):
         ----------
         resize_factor : float
             A factor by which the images should be scaled.
-        resample: int, optional  
+        resample: int, optional
             An optional resampling filter, same as the one used in PIL.Image.resize() function.
             Check it out at https://pillow.readthedocs.io/en/3.1.x/reference/Image.html#PIL.Image.Image.resize
             `0` (Default) for NEAREST (nearest neighbour)
@@ -554,7 +554,7 @@ class Slicer(object):
         ----------
         map_dir : str, optional
             /path/to/mapper/directory.
-            By default, looks for `mapper.csv` in image destination folder. 
+            By default, looks for `mapper.csv` in image destination folder.
 
         Returns:
         ----------
@@ -586,7 +586,7 @@ class Slicer(object):
 
         Parameters:
         ----------
-        None 
+        None
 
         Returns:
         ----------
@@ -602,7 +602,7 @@ class Slicer(object):
 
 class Points(Enum):
     """An Enum to hold info of points of a bounding box or a tile.
-    Used by the method `which_points_lie` and a private method in `Slicer` class. 
+    Used by the method `which_points_lie` and a private method in `Slicer` class.
     See `which_points_lie` method for more details.
 
     Example
@@ -632,12 +632,12 @@ def which_points_lie(label, tile):
     label: tuple
         A tuple with label coordinates in `(xmin, ymin, xmax, ymax)` format.
     tile: tuple
-        A tuple with tile coordinates in `(xmin, ymin, xmax, ymax)` format.  
+        A tuple with tile coordinates in `(xmin, ymin, xmax, ymax)` format.
 
     Note
     ----------
-    Ignoring the cases where either all 4 points of the `label` or none of them lie on the `tile`, 
-    at most only 2 points can lie on the `tile`. 
+    Ignoring the cases where either all 4 points of the `label` or none of them lie on the `tile`,
+    at most only 2 points can lie on the `tile`.
 
     Returns
     ----------
