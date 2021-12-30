@@ -1,7 +1,7 @@
 '''
 Image Bounding Box Slicer
 ~~~~~~~~~~~~
-Chop up images and its bounding boxes. 
+Slice up images and their bounding boxes. 
 Basic usage instructions are available in demo.ipynb
 
 :copyright: (c) 2019 Akshay Chandra Lagandula.
@@ -13,5 +13,6 @@ __author__ = 'Akshay Chandra Lagandula'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2019 Akshay Chandra Lagandula'
 
-from .main import *
+from .slicer import *
 from .helpers import *
+from .resizer import *
