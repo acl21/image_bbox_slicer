@@ -1,8 +1,13 @@
 ## Create And Configure `Slicer` Object
-_Note: This usage demo can be found in `demo.ipynb` in the project's [repo](https://github.com/akshaychandra21/image_bbox_slicer)._
+_Note: This usage demo can be found in `Slicing_Demo.ipynb` in the project's [repo](https://github.com/acl21/image_bbox_slicer)._
 
-Setting Paths To Source And Destination Directories
-You must configure paths to source and destination directories like the following. 
+### Setting Paths To Source And Destination Directories
+You must configure paths to source and destination directories like the following. By default it takes the current working directory as the source folder for both images and annotations and also creates new folders:
+
+* `/sliced_images` and 
+* `/sliced_annotation` 
+
+in the current working directory.
 
 ```python
 import image_bbox_slicer as ibs
@@ -17,7 +22,7 @@ slicer.config_dirs(img_src=im_src, ann_src=an_src,
                    img_dst=im_dst, ann_dst=an_dst)
 ```
 
-## Partial Labels
+### Partial Labels
 
 ![partial](img/partial_labels.jpg)
 
@@ -29,7 +34,7 @@ Configure your slicer to either ignore or consider them by setting `Slicer` obje
 slicer.keep_partial_labels = True
 ```
 
-## Empty Tiles
+### Empty Tiles
 ![empty](img/empty_tiles.png)
 
 An empty tile is a tile with no "labels" in it. The definition of "labels" here is tightly coupled with the user's preference of partial labels. If you choose to keep the partial labels (i.e. `keep_partial_labels = True`), a tile with a partial label is not treated as empty. If you choose to not keep the partial labels (i.e. `keep_partial_labels = False`), a tile with one or more partial labels is considered empty. 
@@ -40,7 +45,7 @@ Configure your slicer to either ignore or consider empty tiles by setting `Slice
 slicer.ignore_empty_tiles = False
 ```
 
-## Before-After Mapping
+### Before-After Mapping
 
 You can choose to store the mapping between file names of the images before and after slicing by setting the `Slicer` object's `save_before_after_map` instance variable to `True`. By default it is set to `False`.
 
@@ -59,9 +64,7 @@ Typically, `mapper.csv` looks like the following:
 slicer.save_before_after_map = True
 ```
 
-## Slicing
-
-Slicing both images and box annotations at the same time.
+### Slicing both images and box annotations at the same time.
 
 ** By Number Of Tiles ** 
 
@@ -86,41 +89,3 @@ slicer.visualize_random()
 ![output-4](img/output_12_2.png)
 
 *Note: `visualize_sliced_random()` randomly picks a recently sliced image from the directory for plotting.*
-
-## Resizing
-![png](img/resize_demo.png)
-
-Images and Bounding Box Annotations Simultaneously
-
-** By Specific Size ** 
-
-
-```python
-slicer.resize_by_size(new_size=(500,200))
-slicer.visualize_resized_random()
-```
-
-
-![png](img/output_18_0.png)
-
-
-![png](img/output_18_1.png)
-
-
-** By A Resize Factor **
-
-
-```python
-slicer.resize_by_factor(resize_factor=0.05)
-slicer.visualize_resized_random()
-```
-
-![png](img/output_20_0.png)
-
-
-![png](img/output_20_1.png)
-
-_Note:_ 
-*`visualize_resized_random()` randomly picks a recently resized image from the destination directory for plotting.*
-
-

@@ -16,9 +16,8 @@ from math import sqrt, ceil, floor
 
 IMG_FORMAT_LIST = ['jpg', 'jpeg', 'png', 'tiff', 'exif', 'bmp']
 
-# Source : Sam Dobson
+# Source: Sam Dobson
 # https://github.com/samdobson/image_slicer
-
 
 def calc_columns_rows(n):
     """Calculates the number of columns and rows required to divide an image

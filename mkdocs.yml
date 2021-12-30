@@ -2,9 +2,10 @@ site_name: image_bbox_slicer
 
 nav:
 - Home: 'index.md'
-- Quick Demo: 'quick-demo.md'
+- Slicing Demo: 'slicing-demo.md'
+- Resizing Demo: 'resizing-demo.md'
 - Some Useful Functions: 'useful-functions.md'
 - License: 'license.md'
 
 theme: readthedocs
-repo_url: https://github.com/akshaychandra21/image_bbox_slicer
+repo_url: https://github.com/acl21/image_bbox_slicer
