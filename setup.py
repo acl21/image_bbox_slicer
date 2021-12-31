@@ -24,8 +24,6 @@ setup(
   classifiers=[
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
-    'Intended Audience :: Deep Learning Engineers',
-    'Intended Audience :: Machine Learning Engineers',
     'Topic :: Software Development :: Build Tools',
     'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3.4',
