@@ -95,8 +95,8 @@ class Slicer(object):
         self.ANN_DST = ann_dst
 
     def config_image_dirs(self, img_src, img_dst=os.path.join(os.getcwd(), 'sliced_images')):
-        """Configures paths to source and destination directories after validating them. 
-        Suitable when doing only image slicing. 
+        """Configures paths to source and destination directories after validating them.
+        Suitable when doing only image slicing.
 
         Parameters
         ----------

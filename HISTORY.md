@@ -1,4 +1,13 @@
-### 0.1.6 (04/23/2019)
+### 0.4 (12/31/2021)
+* Split `main.py` into `slicer.py` and `resizer.py`
+* Changed the demos and docs accordingly
+* Code meets `pycodestyle` standards
+* Changed the title 
+
+### 0.3 (05/14/2021)
+* Works seamlessly on Windows now
+
+### 0.2 (04/23/2019)
 * Fixed some bugs.
 
 ### 0.1.5 (04/23/2019)

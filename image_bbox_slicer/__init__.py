@@ -1,7 +1,7 @@
 '''
-Image Bounding Box Slicer-Resizer
+Image and Bounding Box Slicer-Resizer
 ~~~~~~~~~~~~
-Slice up or Resize images and their bounding boxes. 
+Slice up or Resize images and their bounding boxes.
 Basic usage instructions are available at Slicing_Demo.ipynb and Resizing_Demo.ipynb
 
 :copyright: (c) 2019 Akshay L Chandra, Vineeth N Balasubramanian
